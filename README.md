@@ -10,5 +10,6 @@ Enter a topic to search about, Grok will print the wikipedia summary")
 --Concise flag prints a very short summary
 --Search flag searches wikipedia
 --Browser flag opens page in web browser
+--Debug flag prints debug info
 
 e.x. grok linux -V
