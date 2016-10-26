@@ -23,23 +23,19 @@ def get_data(request_string):
 start_time = time.time()
 
 # Flags
-verbose = any("-v" in arg.lower() for arg in sys.argv)
-concise = any("-c" in arg.lower() for arg in sys.argv)
-search = any("-s" in arg.lower() for arg in sys.argv)
-browser = any("-b" in arg.lower() for arg in sys.argv)
-debug = any("-d" in arg.lower() for arg in sys.argv)
+verbose = False
+concise = False
+search = False
+browser = False
+other = False
+debug = False
 
-length = 250
-if verbose:
-    length = 100000000
-if concise:
-    length = 100
 
 # Searching different wikis
 # This is really hit or miss based on different mediawiki versions
 wiki = 'https://en.wikipedia.org/w/api.php?'
 search_string = ""
-
+search_request = ""
 
 if len(sys.argv) == 1:
     print("Enter a topic to search about, Grok will print the wikipedia summary")
@@ -48,13 +44,50 @@ if len(sys.argv) == 1:
     print("-Search flag searches wikipedia")
     print("-Browser flag opens page in web browser")
     print("-Debug flag prints debug info")
+    print("-----USE CASES-----")
+    print("$grok <search_string> [flags]")
+    print("$grok [flags] <search_string>")
+    print("$grok <search_string> [flags] <--other> <wiki_url>")
+    print("NOTE: search string and flags order does not matter.")
+    print("NOTE: when using -o, last argument MUST be the wiki's url.")
     exit(0)
 
-# Combine anything that isn't a flag into a search string
 for arg in sys.argv[1:]:
-    if arg[0] != '-':
-        search_string += arg + "_"
+    if arg[0] == '-':
+        arg = arg.lower()
+        # Flags
+        """
+        look for flag only if arg is not a search string
+        resolving issues with search subject containing '-'
+        ex: 'arc-en-ciel'
+        last version using 'any' to find flags would have
+        seen the -c flag in 'arc-en-ciel'
+        """
+        verbose |= arg in ["-v", "--verbose"]
+        concise |= arg in ["-c", "--concise"]
+        search |= arg in ["-s", "--search"]
+        browser |= arg in ["-b", "--browser"]
+        debug |= arg in ["-d", "--debug"]
+        other |= arg in ["-o", "--other"]
 
+length = 250
+if verbose:
+    length = 100000000
+if concise:
+    length = 100
+
+# Combine anything that isn't a flag into a search string
+# And use last arg as wiki url IF --other is used (last arg won't be in search_string)
+if other:
+    wiki = sys.argv[-1]  # new wiki url
+    for arg in sys.argv[1:-1]:
+        if arg[0] != '-':
+            search_string += arg + "_"
+
+else:
+    for arg in sys.argv[1:]:
+        if arg[0] != '-':
+            search_string += arg + "_"
 
 if browser:
     webbrowser.open(wiki + 'wiki/' + search_string)
