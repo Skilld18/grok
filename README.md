@@ -12,7 +12,8 @@ Enter a topic to search about, Grok will print the wikipedia summary")
 --Browser flag opens page in web browser
 --Debug flag prints debug info
 
-e.x. grok linux -V
+e.x. grok.py Dog -C
+Dog: This article is about the domestic dog. For related species known as "dogs", see Canidae. For other
 
 
 Installation:
