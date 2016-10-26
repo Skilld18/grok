@@ -13,3 +13,7 @@ Enter a topic to search about, Grok will print the wikipedia summary")
 --Debug flag prints debug info
 
 e.x. grok linux -V
+
+
+Installation:
+sudo python3 setup.py install
