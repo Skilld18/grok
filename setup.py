@@ -1,5 +1,6 @@
 from setuptools import setup
 
 setup(name='grok',
-      license='MIT',)
+      license='MIT',
+      install_requires=['requests'])
 
