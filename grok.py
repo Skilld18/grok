@@ -29,7 +29,6 @@ search = any("-s" in arg.lower() for arg in sys.argv)
 browser = any("-b" in arg.lower() for arg in sys.argv)
 debug = any("-d" in arg.lower() for arg in sys.argv)
 
-# TODO: get proper sections
 length = 250
 if verbose:
     length = 100000000
@@ -92,9 +91,24 @@ if search:
     else:
         exit(0)
 
-args = '&action=parse&page=' + search_string + '&redirects=&format=json'
-data = get_data(wiki + args)
-print(data['title'] + ': ' + data['text']['*'][:length])
+
+# Wikipedia has a nice extension that allows for getting extracts instead of just using char len
+if 'wikipedia' in wiki:
+    args = '&action=query&titles=' + search_string + '&redirects=&format=json&prop=extracts&explaintext'
+    if not verbose and not concise:
+        args += '&exintro'
+    elif concise:
+        args += '&exsentences=1'
+        print(wiki + args)
+    request = requests.get(wiki + args).json()['query']['pages']
+    request = request[list(request.keys())[0]]
+    print(request['title'] + ': ' + request['extract'])
+
+# For other wikis just use string length
+else:
+    args = '&action=parse&page=' + search_string + '&redirects=&format=json'
+    data = get_data(wiki + args)
+    print(data['title'] + ': ' + data['text']['*'][:length])
 
 
 if debug:
