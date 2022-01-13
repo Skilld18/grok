@@ -135,6 +135,9 @@ if 'wikipedia' in wiki:
         print(wiki + args)
     request = requests.get(wiki + args).json()['query']['pages']
     request = request[list(request.keys())[0]]
+    if "extract" not in request.keys():
+        print("No results found")
+        exit(1)
     print(request['title'] + ': ' + request['extract'])
 
 # For other wikis just use string length
